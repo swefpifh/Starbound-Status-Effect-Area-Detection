@@ -1,0 +1,23 @@
+{
+  "itemName": "sadV2NProteinBar",
+  "rarity": "Common",
+  "price": 50,
+  "category": "preparedFood",
+  "inventoryIcon": "sadV2NProteinBar.png",
+  
+  "shortdescription": "Nanite V-2N Protein Bar",
+  "description": "Enables luminous creatures to be brought back into the darkness.\n^green;Luminous effect - 60s^reset;",
+  
+  "effects": [ [
+    {
+      "effect": "sadDetectionArea",
+      "duration": 60
+    }
+  ] ],
+  "foodValue": 0,
+  "tooltipKind": "food",
+  "builder": "/items/buildscripts/buildfood.lua",
+  "maxStack": 10,
+  "itemAgingScripts": ["/scripts/items/rotting.lua"],
+  "rottingMultiplier": 1
+}

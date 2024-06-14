@@ -1,0 +1,23 @@
+{
+  "itemName" : "sadAreaDetectionAugment",
+  "price" : 10000,
+  "rarity" : "Rare",
+  "tooltipKind" : "eppaugment",
+  "category" : "eppAugment",
+  "inventoryIcon" : "sadAreaDetectionAugment.png",
+  
+  "shortdescription" : "Area Detection SE",
+  "description" : "An EPP module to apply red targeting to monsters and NPCs.",
+
+  "augment" : {
+    "type" : "back",
+    "name" : "fireblock",
+    "displayName" : "Detection Area",
+    "displayIcon" : "/items/augments/sadAreaDetectionAugment.png",
+    "effects" : [ "sadDetectionArea" ]
+  },
+
+  "radioMessagesOnPickup" : [ "pickupaugment" ],
+
+  "scripts" : [ "/scripts/augments/augment.lua" ]
+}

@@ -1,19 +1,22 @@
 {
   "name": "sadDetectionArea",
   "defaultDuration": 60,
-  
   "label": "Detection Area",
   "icon": "/statuseffects/sadDetectionArea.png",
-  
   "scripts": ["/scripts/statuseffects/sadDetectionArea.lua"],
   "effectConfig": {
-    "affectMonsters": 1,
-    "affectNPCs": 1,
+    "affectNPCscrew": 0,
     "affectPlayers": 0,
 	
-	"detectionArea": 50,
+	"affectMonstersPassive": 0,
+    "affectMonstersAgressive": 1,
+    "affectNPCsPassive": 0,
+    "affectNPCsAgressive": 1,
+		
+    "detectionRange": 50,
+    "detectionDailyCycle": 0,
 	
-    "statusEffectName": "minibossglow", // Other Status Effect Id : https://docs.google.com/spreadsheets/d/1oo3n-tdBkrlechpmuZoswVrpfmKfIPYNhOcYYsZiMNk/edit?pli=1&gid=0#gid=0
+    "statusEffectName": "minibossglow",
     "statusEffectDuration": 60
   }
 }

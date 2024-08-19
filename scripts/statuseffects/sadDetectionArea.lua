@@ -1,3 +1,5 @@
+require "/scripts/status.lua"
+
 function init()
   script.setUpdateDelta(90)
   
@@ -6,16 +8,41 @@ function init()
   self.affectNPCsPassive = config.getParameter("affectNPCsPassive", 0) == 1
   self.affectNPCsAgressive = config.getParameter("affectNPCsAgressive", 0) == 1
   self.affectPlayers = config.getParameter("affectPlayers", 0) == 1
-  self.affectNPCsCrew = config.getParameter("affectNPCscrew", 0) == 1  -- Utilisation de la clé correcte
+  self.affectNPCsCrew = config.getParameter("affectNPCscrew", 0) == 1
 
-  self.statusEffectName = config.getParameter("statusEffectName", "minibossglow")
+  -- Gestion de plusieurs effets de statut
+  self.statusEffectNames = config.getParameter("statusEffectName", {"minibossglow"})
+  if type(self.statusEffectNames) ~= "table" then
+    self.statusEffectNames = {self.statusEffectNames}
+  end
+
   self.statusEffectDuration = config.getParameter("statusEffectDuration", 60)
   self.detectionRange = config.getParameter("detectionRange", 50)
   self.detectionDailyCycle = config.getParameter("detectionDailyCycle", 0)
+  
+  self.dpsActivation = config.getParameter("dpsActivation", 0) == 1
+
+  -- Configure le listener de dégâts si dpsActivation est activé
+  if self.dpsActivation then
+    self.listener = damageListener("inflictedDamage", function(notifications)
+      for _, notification in pairs(notifications) do
+        local targetEntityId = notification.targetEntityId
+
+        -- Vérifier si l'entité cible est dans la bulle de détection
+        if self.entitiesInRange and self.entitiesInRange[targetEntityId] then
+          applyEffectToEntity(targetEntityId)
+        end
+      end
+    end)
+  end
 end
 
 function update(dt)
   detectionEntities()
+  
+  if self.dpsActivation and self.listener then
+    self.listener:update()
+  end
 end
 
 function detectionEntities()
@@ -34,6 +61,9 @@ function detectionEntities()
     includedTypes = {"monster", "npc", "player"},
     boundMode = "CollisionArea"
   })
+
+  -- Réinitialise la liste des entités
+  self.entitiesInRange = {}
 
   -- Appliquer l'effet de statut aux entités appropriées
   for _, entityId in ipairs(nearbyEntities) do
@@ -54,11 +84,18 @@ function detectionEntities()
         (entityType == "player" and self.affectPlayers))
 
     if shouldApplyEffect then
-      sb.logInfo("Applying %s to entity: %s of type: %s", self.statusEffectName, entityId, entityType)
-      world.sendEntityMessage(entityId, "applyStatusEffect", self.statusEffectName, self.statusEffectDuration, entity.id())
-    else
-      sb.logInfo("Skipping entity: %s of type: %s, shouldApplyEffect: %s, isCrew: %s, affectNPCsCrew: %s", entityId, entityType, shouldApplyEffect, isCrew, self.affectNPCsCrew)
+      self.entitiesInRange[entityId] = true -- Ajouter l'entité à la liste pour le traitement des dégâts
+      if not self.dpsActivation then
+        -- Appliquer l'effet immédiatement si dpsActivation est désactivé
+        applyEffectToEntity(entityId)
+      end
     end
+  end
+end
+
+function applyEffectToEntity(entityId)
+  for _, effectName in ipairs(self.statusEffectNames) do
+    world.sendEntityMessage(entityId, "applyStatusEffect", effectName, self.statusEffectDuration, entity.id())
   end
 end
 
